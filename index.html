@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Обычная веб-страница</title>
+    </head>
+    <body style="margin: 0; padding: 0;">
+    	<canvas id="canv" style="display: block;">Your browser is no supported. You mad bro :D</canvas>
+    	<script>
+var 
+	canv 		 = document.getElementById("canv");
+	ctx 		 = canv.getContext("2d");
+	mouseClicked = false;
+	coords 		 = [];
+
+canv.width = window.innerWidth;
+canv.height = window.innerHeight;
+ctx.lineWidth = 4;
+
+addEventListener("mousedown", function (e) {
+	mouseClicked = true;
+	ctx.beginPath();
+	ctx.moveTo(e.clientX, e.clientY);
+	coords.push([e.clientX, e.clientY, 0]);
+});
+
+addEventListener("mouseup", function () {
+	mouseClicked = false;
+});
+
+addEventListener("mousemove", function (e) {
+	if (mouseClicked){
+		coords.push([e.clientX, e.clientY]);
+		ctx.lineTo(e.clientX, e.clientY);
+		ctx.stroke()
+	}
+});
+
+addEventListener("keydown", function (e) {
+	switch(e.keyCode){
+		case 67:
+			clear(); // c - clear
+			break;
+		case 80:
+			copy(); // p - copy
+			break;
+		case 82:
+			rewrite(); // r - rewrite
+			break;
+	}
+});
+
+function clear () {
+	ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+	coords = [];
+};
+
+function copy () {
+	localStorage.setItem("coords", JSON.stringify(coords));
+	coords = [];
+};
+
+function rewrite (){
+	clear();
+	coords = JSON.parse(localStorage.getItem("coords"));
+	var copiedCoords = JSON.parse(localStorage.getItem("coords")),
+		timer 		 = setInterval(function () {
+			
+			if (!copiedCoords.length)
+			{
+				clearInterval(timer);
+				return;
+			}
+
+			let coord = copiedCoords.shift(),
+				e = {
+					clientX: coord[0],
+					clientY: coord[1]
+				}
+
+			if (coord.length === 3)
+				ctx.beginPath();
+
+			ctx.lineTo(e.clientX, e.clientY);
+			ctx.stroke()
+
+		}, 8);
+};
+</script>
+	</body>
+</html>
