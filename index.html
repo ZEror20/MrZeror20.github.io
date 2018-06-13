@@ -12,22 +12,18 @@ var
 	ctx 		 = canv.getContext("2d");
 	mouseClicked = false;
 	coords 		 = [];
-
 canv.width = window.innerWidth;
 canv.height = window.innerHeight;
 ctx.lineWidth = 4;
-
 addEventListener("mousedown", function (e) {
 	mouseClicked = true;
 	ctx.beginPath();
 	ctx.moveTo(e.clientX, e.clientY);
 	coords.push([e.clientX, e.clientY, 0]);
 });
-
 addEventListener("mouseup", function () {
 	mouseClicked = false;
 });
-
 addEventListener("mousemove", function (e) {
 	if (mouseClicked){
 		coords.push([e.clientX, e.clientY]);
@@ -36,6 +32,22 @@ addEventListener("mousemove", function (e) {
 	}
 });
 
+addEventListener("touchstart", function (e) {
+	mouseClicked = true;
+	ctx.beginPath();
+	ctx.moveTo(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+	coords.push([e.changedTouches[0].clientX, e.changedTouches[0].clientY, 0]);
+});
+addEventListener("touchend", function () {
+	mouseClicked = false;
+});
+addEventListener("touchmove", function (e) {
+	if (mouseClicked){
+		coords.push([e.changedTouches[0].clientX, e.changedTouches[0].clientY]);
+		ctx.lineTo(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+		ctx.stroke()
+	}
+});
 addEventListener("keydown", function (e) {
 	switch(e.keyCode){
 		case 67:
@@ -49,17 +61,14 @@ addEventListener("keydown", function (e) {
 			break;
 	}
 });
-
 function clear () {
 	ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 	coords = [];
 };
-
 function copy () {
 	localStorage.setItem("coords", JSON.stringify(coords));
 	coords = [];
 };
-
 function rewrite (){
 	clear();
 	coords = JSON.parse(localStorage.getItem("coords"));
@@ -71,19 +80,15 @@ function rewrite (){
 				clearInterval(timer);
 				return;
 			}
-
 			let coord = copiedCoords.shift(),
 				e = {
 					clientX: coord[0],
 					clientY: coord[1]
 				}
-
 			if (coord.length === 3)
 				ctx.beginPath();
-
 			ctx.lineTo(e.clientX, e.clientY);
 			ctx.stroke()
-
 		}, 8);
 };
 </script>
